@@ -1,27 +1,12 @@
-#FROM httpd:2.4-bullseye
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 WORKDIR /usr/src
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Install required tools
-RUN apt-get update && apt-get install cron curl make iproute2 lsb-release ca-certificates gnupg2 git wget -y
-
-# Install the SURY Repository Signing Key
-#RUN curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
-# Install the SURY Repository for PHP
-#RUN echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list
-
-# Install Required Dependencies
-RUN apt-get update && apt-get -y install \
-  build-essential apache2 rsync fail2ban bison flex \
-  php7.4 php7.4-curl php7.4-cli php7.4-common \
-  php7.4-mysql php7.4-gd php7.4-mbstring php7.4-intl php7.4-xml php-pear \
-  sox libncurses5-dev libssl-dev mpg123 libxml2-dev libnewt-dev \
-  pkg-config automake libtool \
-  autoconf git uuid uuid-dev libasound2-dev libogg-dev \
-  libvorbis-dev libicu-dev libcurl4-openssl-dev libical-dev libneon27-dev libsrtp2-dev \
-  libspandsp-dev sudo subversion libtool-bin python-dev \
-  dirmngr sendmail-bin sendmail
+# Install requirements
+RUN apt-get update && apt-get -y install build-essential git curl wget libnewt-dev libssl-dev libncurses5-dev subversion libsqlite3-dev libjansson-dev libxml2-dev uuid-dev default-libmysqlclient-dev htop sngrep lame ffmpeg mpg123 \
+  && apt-get -y install git vim curl wget libnewt-dev libssl-dev libncurses5-dev subversion libsqlite3-dev build-essential libjansson-dev libxml2-dev uuid-dev expect \
+  && apt-get install -y build-essential linux-headers-`uname -r` openssh-server apache2 mariadb-server mariadb-client bison flex php8.2 php8.2-curl php8.2-cli php8.2-common php8.2-mysql php8.2-gd php8.2-mbstring php8.2-intl php8.2-xml php-pear curl sox libncurses5-dev libssl-dev mpg123 libxml2-dev libnewt-dev sqlite3 libsqlite3-dev pkg-config automake libtool autoconf git unixodbc-dev uuid uuid-dev libasound2-dev libogg-dev libvorbis-dev libicu-dev libcurl4-openssl-dev odbc-mariadb libical-dev libneon27-dev libsrtp2-dev libspandsp-dev sudo subversion libtool-bin python-dev-is-python3 unixodbc vim wget libjansson-dev software-properties-common nodejs npm ipset iptables fail2ban php-soap
 
 # Install NodeJS
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - && apt-get install -y nodejs
