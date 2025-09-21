@@ -5,3 +5,4 @@ sudo docker compose exec -it -w /usr/local/src/freepbx freepbx php install -n --
 ci vuole ogni volta o meno
 - Rivedere volumi
 - Abilitare Git LFS per salvare o le cartelle sorgenti di asterisk/freepbx oppure gli archivi al posto delle cartelle (una delle due opzioni)
+- Provare DNS Cloudflare e HTTPS (Nginx reverse proxy)
