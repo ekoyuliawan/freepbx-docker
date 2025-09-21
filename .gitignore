@@ -2,9 +2,8 @@
 *.txt
 
 # Source files
-freepbx/
-odbc/
-asterisk-16.3*
+source/*.tar.gz
+source/*.tgz
 
 .DS_Store*
 

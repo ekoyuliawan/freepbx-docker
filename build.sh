@@ -1,10 +1,13 @@
+#!/usr/bin/env bash
+
+
 freepbxip="172.18.0.20"
 network_interface="freepbxint"
 
 
 # INSTALL FREEPBX
 if [[  "$*" == *"--install-freepbx"*  ]]; then
-    docker compose exec -it freepbx php /usr/src/freepbx/install -n --dbuser=freepbxuser --dbpass="$(cat freepbxuser_password.txt)" --dbhost=db
+    docker compose exec -it -w /usr/local/src/freepbx freepbx php install -n --dbuser=freepbxuser --dbpass="$(cat freepbxuser_password.txt)" --dbhost=db
 
 # CLEAN
 elif [[  "$*" == *"--clean-all"*  ]]; then
@@ -23,8 +26,7 @@ elif [[  "$OSTYPE" == "darwin"*   ]]; then
 
 # BUILD AND RUN + ADD IPTABLES RULES (no arguments passed)
 else
-    # Database and Vault transit + run
-    docker compose up -d --build
+    #docker compose up -d --build
 
     echo "Configuring firewall rules for RTP ports..."
     # OPEN RTP PORTS ON IPTABLES FOR FREEPBX FOR LINUX HOSTS

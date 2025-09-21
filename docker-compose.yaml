@@ -1,8 +1,5 @@
-version: '3.7'
-
 volumes:
   mysql_data:
-  vault-transit:
   var_data:
   usr_data:
   etc_data:
@@ -28,7 +25,7 @@ secrets:
 services:
   db:
     restart: always
-    image: mysql:5.7
+    image: mariadb:10.11
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
       MYSQL_USER: freepbxuser
@@ -46,7 +43,7 @@ services:
 
   freepbx:
     #image: escomputers/freepbx:latest
-    image: freepbx:custom
+    image: freepbx:alpha0.3
     cap_add:
       - NET_ADMIN
     volumes:

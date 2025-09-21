@@ -1,7 +1,13 @@
+#!/usr/bin/env bash
+set -e
+
+# Start cron
+/usr/sbin/cron &
+
 # Start Asterisk service
-/usr/src/freepbx/start_asterisk start &
+/usr/local/src/freepbx/start_asterisk start &
 
 # Start Fail2ban
-fail2ban-client start &
+#fail2ban-client start &
 
-apache2ctl -D FOREGROUND
+exec apache2ctl -D FOREGROUND
