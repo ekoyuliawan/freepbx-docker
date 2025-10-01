@@ -1,6 +1,3 @@
-- Provare freepbx senza supporto DAHDI rimuovendo il package "linux-headers-`uname -r`"
 - Abilitare fail2ban
 - Rivedere volumi
-- Abilitare Git LFS per salvare o le cartelle sorgenti di asterisk/freepbx oppure gli archivi al posto delle cartelle (una delle due opzioni)
 - Provare DNS Cloudflare e HTTPS (Nginx reverse proxy)
-- Modificare script run.sh per prendere un argomento con il range delle porte RTP da aprire su iptables

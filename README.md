@@ -5,6 +5,7 @@ This is MVP [Docker Compose](https://docs.docker.com/compose/) application for h
 Upon starting this multi-container application, it will give you a turnkey PBX system for SIP calling.
 
 * FreePBX 17.0.21
+* PHP 8.2.29
 * Asterisk 21.10.2
 * MariaDB 10.11.14
 * Fail2ban pre-configured with restrictive enforcement rules
@@ -39,7 +40,7 @@ So, `run.sh` will take care of iptables configuration, besides building and runn
 
 ### Host requirements
 - `ip`, `iptables` and `awk` commands
-- Arm hosts are not supported since Asterisk needs to be compiled differently.
+- 64-bit Intel/AMD (x86_64) platform. Arm architecture is not supported since Asterisk needs to be compiled differently.
 - Docker iptables rules will bypass any firewall rule on the system.
 - Iptables rules are temporary, unless you make them persistent in this way:
 ```bash
@@ -54,7 +55,7 @@ sudo sh -c 'iptables-save > /etc/iptables/rules.v4'
 ```
 - Customize Fail2ban preferences by editing the file `fail2ban/jail.local`. Currently it bans 2 consecutive failed SIP registration attempts within 30 seconds for 1 week.
 
-- Make sure to configure a valid DNS server for Docker containers by adding the following to `/etc/docker/daemon.json` (restart Docker after saving the file):
+- If containers can ping a public IP (e.g., ping 8.8.8.8 works), but fail when pinging a domain name (e.g., ping google.com fails), you have to configure a valid DNS server for Docker containers by adding the following to `/etc/docker/daemon.json` (restart Docker after saving the file):
   ```json
   {
     "dns": ["1.1.1.1"]
@@ -97,7 +98,7 @@ sed -i '/image: escomputers\/freepbx:latest/ {
 ```bash
 # If you want to override the default RTP port range (16384-32767):
 sudo bash run.sh --rtp 10000-20000
-# otherwise simply
+# otherwise simply run:
 sudo bash run.sh
 
 # Install Freepbx

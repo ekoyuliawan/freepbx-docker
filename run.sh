@@ -19,6 +19,44 @@ if [[ -z "$DEFAULT_IFACE" ]]; then
   exit 1
 fi
 
+# Parse optional --rtp RANGE argument without affecting other flags
+# Supports only "--rtp 10000-20000"
+requested_rtp=""
+prev=""
+for arg in "$@"; do
+  if [[ "$prev" == "--rtp" ]]; then
+    requested_rtp="$arg"
+    prev=""
+    continue
+  fi
+  case "$arg" in
+    --rtp)
+      prev="--rtp"
+      ;;
+  esac
+done
+
+if [[ -n "$prev" ]]; then
+  echo "ERROR: --rtp requires a value like 10000-20000" >&2
+  exit 1
+fi
+
+if [[ -n "$requested_rtp" ]]; then
+  if [[ "$requested_rtp" =~ ^[0-9]+-[0-9]+$ ]]; then
+    start_port="${requested_rtp%%-*}"
+    end_port="${requested_rtp##*-}"
+    if (( end_port > start_port )); then
+      rtp_port_range="$requested_rtp"
+    else
+      echo "ERROR: Invalid --rtp value '$requested_rtp'. The right number must be greater than the left (e.g., 10000-20000)." >&2
+      exit 1
+    fi
+  else
+    echo "ERROR: Invalid --rtp value '$requested_rtp'. Use two integers separated by '-' (e.g., 10000-20000)." >&2
+    exit 1
+  fi
+fi
+
 # INSTALL FREEPBX
 if [[  "$*" == *"--install-freepbx"*  ]]; then
     sudo docker compose exec -it -w /usr/local/src/freepbx freepbx php install -n --dbuser=freepbxuser --dbpass="$(cat freepbxuser_password.txt)" --dbhost=db
@@ -43,8 +81,7 @@ elif [[ "$OSTYPE" == "darwin"* || "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" |
 else
     if [[  "$OSTYPE" == "linux-gnu"*  ]]; then
         echo "Configuring iptables rules for RTP ports"
-
-        # Allow packets belonging to existing or related connections.
+          # Allow packets belonging to existing or related connections.
         # Check if the rule already exists in the DOCKER-USER chain (-C)
         # If it doesn't, it inserts the rule at the very top of the chain (-I 1).
         sudo iptables -C DOCKER-USER -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT 2>/dev/null \
@@ -77,8 +114,8 @@ else
             || sudo iptables -t nat -A POSTROUTING -s "$freepbx_network" -o "$DEFAULT_IFACE" -j MASQUERADE \
             && echo "Rule for Source NAT added!"
 
-    # Build and start the Compose services
-    sudo docker compose up -d --build
+        # Build and start the Compose services
+        sudo docker compose up -d --build
     fi
 
 fi
