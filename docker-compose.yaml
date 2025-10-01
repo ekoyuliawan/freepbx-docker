@@ -44,7 +44,7 @@ services:
   freepbx:
     restart: always
     #image: escomputers/freepbx:latest
-    image: freepbx:alpha0.3
+    image: freepbx:beta
     cap_add:
       - NET_ADMIN
     volumes:

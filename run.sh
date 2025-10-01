@@ -81,7 +81,7 @@ elif [[ "$OSTYPE" == "darwin"* || "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" |
 else
     if [[  "$OSTYPE" == "linux-gnu"*  ]]; then
         echo "Configuring iptables rules for RTP ports"
-          # Allow packets belonging to existing or related connections.
+        # Allow packets belonging to existing or related connections.
         # Check if the rule already exists in the DOCKER-USER chain (-C)
         # If it doesn't, it inserts the rule at the very top of the chain (-I 1).
         sudo iptables -C DOCKER-USER -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT 2>/dev/null \
@@ -115,7 +115,7 @@ else
             && echo "Rule for Source NAT added!"
 
         # Build and start the Compose services
-        sudo docker compose up -d --build
+        sudo docker compose up -d
     fi
 
 fi
