@@ -9,10 +9,12 @@ Upon starting this multi-container application, it will give you a turnkey PBX s
 * Asterisk 21.10.2
 * MariaDB 10.11.14
 * Fail2ban pre-configured with restrictive enforcement rules
+* Email notifications
 * Supports data persistence
 * Base image Debian [debian:bookworm-slim](https://hub.docker.com/_/debian/)
 * Apache 2.4.65
 * NodeJS v18.20.4
+* DAHDI channel not supported
 
 ### Volumes
 | Directories        | Service |              
@@ -36,7 +38,7 @@ RTP ports e.g. `16384-32767/udp` require a particular configuration in order to 
 properly exposed.\
 There's a [known issue](https://github.com/moby/moby/issues/11185) about Docker and its way to expose a large range of ports, since each port exposed loads another process into memory and you may be experiencing a low memory condition.\
 As a trade-off, those ports are going to be exposed via Docker host `iptables` manually.\
-So, `run.sh` will take care of iptables configuration, besides building and running the image.
+So [run.sh](run.sh) will take care of iptables configuration, besides building and running the image.
 
 ### Host requirements
 - `ip`, `iptables` and `awk` commands
@@ -55,7 +57,7 @@ sudo sh -c 'iptables-save > /etc/iptables/rules.v4'
 ```
 - Customize Fail2ban preferences by editing the file `fail2ban/jail.local`. Currently it bans 2 consecutive failed SIP registration attempts within 30 seconds for 1 week.
 
-- If containers can ping a public IP (e.g., ping 8.8.8.8 works), but fail when pinging a domain name (e.g., ping google.com fails), you have to configure a valid DNS server for Docker containers by adding the following to `/etc/docker/daemon.json` (restart Docker after saving the file):
+- Make sure to configure a valid DNS server for Docker containers by adding the following to `/etc/docker/daemon.json` (restart Docker after saving the file):
   ```json
   {
     "dns": ["1.1.1.1"]
@@ -73,24 +75,16 @@ chmod 600 mysql_root_password.txt
 chmod 600 freepbxuser_password.txt
 ```
 
+If you want email notifications configure:
+- /etc/postfix/main.cf
+- /etc/postfix/sasl_passwd
+
 2. OPTION A: build the image from scratch:\
-**Important**: the Dockerfile installs "linux-headers-`uname -r`".\
-During docker build, `uname -r` resolves to the host kernel version.\
-That means that you need to build on a Debian host running a Debian kernel that matches the image’s release.\
-On non-Debian hosts (or mismatched kernels), the `apt` install will fail.\
-Those Kernel headers are only required if you want to compile kernel modules like DAHDI driver. 
-If you don’t need DAHDI, simply remove that package line from the [Dockerfile](source/Dockerfile). In case you need it, prefer building/loading DAHDI on the host and exposing `/dev/dahdi` to the container; building kernel modules inside the image tightly couples the build to the host kernel and is fragile.
 ```bash
 # Build it
 cd source && sudo docker build -t freepbx:your-tag .
-
-# Then edit the value of services.freepbx.image in the docker-compose.yaml by setting the proper image version and tag
-sed -i '/image: escomputers\/freepbx:latest/ {
-    s/^/    #/
-    a\
-    image: freepbx:your-tag
-}' docker-compose.yaml
 ```
+Then edit the value of services.freepbx.image in the docker-compose.yaml by setting the proper image version and tag.
 
 2. Option B: if you want to use the pre-built image on Docker Hub, jump to the next step directly
 
@@ -98,6 +92,9 @@ sed -i '/image: escomputers\/freepbx:latest/ {
 ```bash
 # If you want to override the default RTP port range (16384-32767):
 sudo bash run.sh --rtp 10000-20000
+# NOTE
+# If you run the script with the default RTP range 16384-32767 and later rerun it with a different range, the iptables rules from the previous range remain in place and you have to delete those rules manually before or after applying the new range.
+
 # otherwise simply run:
 sudo bash run.sh
 
@@ -108,4 +105,4 @@ sudo bash run.sh --install-freepbx
 sudo bash run.sh --clean-all
 ```
 
-Login to the web server's admin URL, enter your admin username, admin password and email address and start configuring the system!
+Login to the web server's admin URL and start configuring the system!

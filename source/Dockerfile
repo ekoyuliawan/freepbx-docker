@@ -8,6 +8,9 @@ WORKDIR /usr/src
 ARG ASTERISK_VERSION=21.10.2
 ARG ASTERISK_SHA256=
 
+ARG FREEPBX_VERSION=17.0.21
+ARG FREEPBX_VERSION_TAG=17.0.2
+
 # Install requirements
 RUN apt-get update && apt-get -y install \
   build-essential pkg-config cron curl wget \
@@ -16,6 +19,8 @@ RUN apt-get update && apt-get -y install \
   libxml2-dev uuid uuid-dev default-libmysqlclient-dev \
   lame ffmpeg mpg123 expect \
   # PHP 8.2 Installation
+  && echo "postfix postfix/mailname string freepbx.localdomain" | debconf-set-selections \
+  && echo "postfix postfix/main_mailer_type string 'Internet Site'" | debconf-set-selections \
   && apt-get install -y apache2 mariadb-client \
   php8.2 php8.2-curl php8.2-cli \
   php8.2-common php8.2-mysql php8.2-gd php8.2-mbstring php8.2-intl \
@@ -24,7 +29,8 @@ RUN apt-get update && apt-get -y install \
   libasound2-dev libogg-dev libvorbis-dev libicu-dev libcurl4-openssl-dev \
   odbc-mariadb unixodbc \
   libical-dev libneon27-dev libsrtp2-dev libspandsp-dev libtool-bin \
-  nodejs npm ipset iptables fail2ban php-soap
+  nodejs npm ipset iptables fail2ban php-soap \
+  postfix libsasl2-modules mailutils
 
 # Download and build Asterisk directly in this stage
 RUN set -eux \
@@ -63,28 +69,26 @@ RUN set -eux \
   && echo "ServerName localhost" >> /etc/apache2/apache2.conf \
   && rm /var/www/html/index.html
 
-COPY odbc/odbcinst.ini /etc/odbcinst.ini
-COPY odbc/odbc.ini /etc/odbc.ini
 
 WORKDIR /usr/local/src
 
-# Download FreePBX sources at build time
-ARG FREEPBX_VERSION=17.0.21
-ARG FREEPBX_VERSION_TAG=17.0.2
-
+# Download FreePBX source at build time
 RUN set -eux \
   && FREEPBX_URL="https://github.com/escomputers/freepbx-docker/releases/download/v${FREEPBX_VERSION_TAG}/freepbx-${FREEPBX_VERSION}.tgz" \
   && curl -fsSL "$FREEPBX_URL" -o freepbx.tgz \
   && tar -xzf freepbx.tgz \
-  && rm freepbx.tgz && apt-get clean \
+  && rm freepbx.tgz \
+  && mv /etc/fail2ban/jail.conf /etc/fail2ban/jail.conf-original \
+  && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-# # Install and configure Fail2ban
-# RUN apt-get install iptables jq vim sudo fail2ban -y && mv /etc/fail2ban/jail.conf /etc/fail2ban/jail.conf-original
-# RUN adduser docker && adduser docker sudo
-# RUN su - docker
-# COPY fail2ban/ /etc/fail2ban/
-
+COPY odbc/odbcinst.ini /etc/odbcinst.ini
+COPY odbc/odbc.ini /etc/odbc.ini
+COPY fail2ban/ /etc/fail2ban/
+COPY postfix/main.cf /etc/postfix/main.cf
+COPY postfix/sasl_passwd /etc/postfix/sasl_passwd
 COPY entrypoint.sh entrypoint.sh
+
+RUN postmap hash:/etc/postfix/sasl_passwd
 
 CMD ["/usr/bin/env", "bash", "/usr/local/src/entrypoint.sh"]
