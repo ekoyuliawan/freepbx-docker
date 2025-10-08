@@ -85,7 +85,7 @@ Example configurations for Gmail accounts are included in those files.
 # Build it
 cd source && sudo docker build -t freepbx:your-tag .
 ```
-Then edit the value of services.freepbx.image in the docker-compose.yaml by setting the proper image version and tag.
+Then edit the value of `services.freepbx.image` in the [docker-compose.yaml](docker-compose.yaml) by setting the proper image version and tag.
 
 3. OPTION B: if you want to use the pre-built image on Docker Hub, jump to the next step directly
 
