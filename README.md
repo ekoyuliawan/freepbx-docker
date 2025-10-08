@@ -104,4 +104,10 @@ sudo bash run.sh --install-freepbx
 sudo bash run.sh --clean-all
 ```
 
+5. TLS support using Let's Encrypt DNS challenge
+```bash
+# Make sure to have both 80 and 443 TCP ports allowed by the firewall and a valid DNS record A
+sudo docker compose exec -it freepbx certbot --apache -d your.domain.com --email your-email@email.com --agree-tos --redirect -n
+```
+
 Login to the web server's admin URL and start configuring the system!

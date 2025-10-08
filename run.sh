@@ -104,7 +104,11 @@ else
         fi
 
         # Build and start the Compose services
-        sudo docker compose up -d && echo "Waiting a few secs for db readiness" && sleep 10
+        sudo docker compose up -d && {
+          printf "Waiting for database readiness"
+          for _ in $(seq 1 10); do printf "."; sleep 1; done
+          echo " done"
+        }
     fi
 
 fi

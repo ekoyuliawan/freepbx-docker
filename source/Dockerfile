@@ -30,7 +30,7 @@ RUN apt-get update && apt-get -y install \
   odbc-mariadb unixodbc \
   libical-dev libneon27-dev libsrtp2-dev libspandsp-dev libtool-bin \
   nodejs npm ipset iptables fail2ban php-soap \
-  postfix libsasl2-modules mailutils
+  postfix libsasl2-modules mailutils certbot python3-certbot-apache
 
 # Download and build Asterisk directly in this stage
 RUN set -eux \

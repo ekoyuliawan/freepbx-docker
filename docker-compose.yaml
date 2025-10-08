@@ -55,10 +55,8 @@ services:
       defaultnet:
         ipv4_address: 172.18.0.20
     ports:
-      # If you aren't using a reverse proxy
       - "80:80/tcp"
-      # If you want SSL Support and not using a reverse proxy
-      # - "443:443/tcp"
+      - "443:443/tcp"
       - "5060:5060/udp"
     depends_on:
       - db
