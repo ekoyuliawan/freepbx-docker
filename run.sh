@@ -60,6 +60,11 @@ if [[  "$*" == *"--install-freepbx"*  ]]; then
 
 # CLEAN
 elif [[  "$*" == *"--clean-all"*  ]]; then
+  read -r -p "Are you sure you want to clean up everything? (yes/no)? " confirmation
+  if [[ "$confirmation" != "yes" ]]; then
+    echo "Cleanup aborted."
+    exit 0
+  fi
   sudo docker container stop freepbx-docker-db-1 && sudo docker container rm freepbx-docker-db-1
   sudo docker container stop freepbx-docker-freepbx-1 && sudo docker container rm freepbx-docker-freepbx-1
   sudo docker volume rm freepbx-docker_var_data

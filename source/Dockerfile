@@ -78,17 +78,20 @@ RUN set -eux \
   && curl -fsSL "$FREEPBX_URL" -o freepbx.tgz \
   && tar -xzf freepbx.tgz \
   && rm freepbx.tgz \
-  && mv /etc/fail2ban/jail.conf /etc/fail2ban/jail.conf-original \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
 COPY odbc/odbcinst.ini /etc/odbcinst.ini
 COPY odbc/odbc.ini /etc/odbc.ini
-COPY fail2ban/ /etc/fail2ban/
+COPY fail2ban/jail.local /etc/fail2ban/jail.local
+COPY fail2ban/filter.d/asterisk.conf /etc/fail2ban/filter.d/asterisk.conf
 COPY postfix/main.cf /etc/postfix/main.cf
 COPY postfix/sasl_passwd /etc/postfix/sasl_passwd
 COPY entrypoint.sh entrypoint.sh
 
-RUN postmap hash:/etc/postfix/sasl_passwd
+RUN postmap hash:/etc/postfix/sasl_passwd \
+  && mkdir -p /var/log/asterisk \
+  && touch /var/log/asterisk/full \
+  && chown -R asterisk:asterisk /var/log/asterisk
 
 CMD ["/usr/bin/env", "bash", "/usr/local/src/entrypoint.sh"]

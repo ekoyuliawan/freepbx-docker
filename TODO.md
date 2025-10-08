@@ -1,3 +1,2 @@
 - Rivedere volumi
 - Provare DNS Cloudflare e HTTPS (Nginx reverse proxy)
-- Aggiungere are you sure nel --clean-all

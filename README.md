@@ -75,28 +75,27 @@ chmod 600 mysql_root_password.txt
 chmod 600 freepbxuser_password.txt
 ```
 
-If you want email notifications configure:
-- /etc/postfix/main.cf
-- /etc/postfix/sasl_passwd
+2. If you want to enable email notifications, configure the following:
+- set the `relayhost` in [postfix/main.cf](source/postfix/main.cf) to match your SMTP server. 
+- fill in [postfix/sasl_passwd](source/postfix/sasl_passwd) with your SMTP server again and your email credentials\
+Example configurations for Gmail accounts are included in those files.
 
-2. OPTION A: build the image from scratch:\
+3. OPTION A: build the image from scratch:\
 ```bash
 # Build it
 cd source && sudo docker build -t freepbx:your-tag .
 ```
 Then edit the value of services.freepbx.image in the docker-compose.yaml by setting the proper image version and tag.
 
-2. Option B: if you want to use the pre-built image on Docker Hub, jump to the next step directly
+3. OPTION B: if you want to use the pre-built image on Docker Hub, jump to the next step directly
 
-3. Configure RTP ports on the host and build + run the Compose project:
+4. Configure RTP ports on the host and build + run the Compose project:
 ```bash
+sudo bash run.sh
 # If you want to override the default RTP port range (16384-32767):
 sudo bash run.sh --rtp 10000-20000
 # NOTE
 # If you run the script with the default RTP range 16384-32767 and later rerun it with a different range, the iptables rules from the previous range remain in place and you have to delete those rules manually before or after applying the new range.
-
-# otherwise simply run:
-sudo bash run.sh
 
 # Install Freepbx
 sudo bash run.sh --install-freepbx

@@ -11,3 +11,5 @@ maxretry = 2
 findtime = 30
 bantime = 1w
 action = iptables-allports[protocol=all]
+[sshd]
+enabled = false
