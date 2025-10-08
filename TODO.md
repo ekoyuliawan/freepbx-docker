@@ -1,2 +1,1 @@
 - Rivedere volumi
-- Provare DNS Cloudflare e HTTPS (Nginx reverse proxy)
