@@ -83,7 +83,7 @@ Example configurations for Gmail accounts are included in those files.
 3. OPTION A: build the image from scratch:\
 ```bash
 # Build it
-cd source && sudo docker build -t freepbx:your-tag .
+cd source && sudo docker build -t your-image-name:your-tag .
 ```
 Then edit the value of `services.freepbx.image` in the [docker-compose.yaml](docker-compose.yaml) by setting the proper image version and tag.
 
