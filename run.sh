@@ -68,9 +68,7 @@ elif [[  "$*" == *"--clean-all"*  ]]; then
   sudo docker container stop freepbx-docker-db-1 && sudo docker container rm freepbx-docker-db-1
   sudo docker container stop freepbx-docker-freepbx-1 && sudo docker container rm freepbx-docker-freepbx-1
   sudo docker volume rm freepbx-docker_var_data
-  sudo docker volume rm freepbx-docker_usr_data
   sudo docker volume rm freepbx-docker_etc_data
-  sudo docker volume rm freepbx-docker_asterisk_home
   sudo docker volume rm freepbx-docker_mysql_data
   sudo docker network rm freepbx-docker_defaultnet
 
