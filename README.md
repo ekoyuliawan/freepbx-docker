@@ -16,16 +16,6 @@ Upon starting this multi-container application, it will give you a turnkey PBX s
 * NodeJS v18.20.4
 * DAHDI channel not supported
 
-### Volumes
-| Directories        | Service |              
-| ----------------   | ------- |          
-| `/etc`             | freepbx |         
-| `/usr`             | freepbx |            
-| `/home/asterisk`   | freepbx |     
-| `/var`             | freepbx | 
-| `/var/lib`         | mysql   |  
-
-
 ### Ports
 The following ports are exposed via Docker.
 
