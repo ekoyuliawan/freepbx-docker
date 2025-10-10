@@ -30,7 +30,8 @@ RUN apt-get update && apt-get -y install \
   odbc-mariadb unixodbc \
   libical-dev libneon27-dev libsrtp2-dev libspandsp-dev libtool-bin \
   nodejs npm ipset iptables fail2ban php-soap \
-  postfix libsasl2-modules mailutils certbot python3-certbot-apache
+  postfix libsasl2-modules mailutils \
+  certbot python3-certbot-apache logrotate
 
 # Download and build Asterisk directly in this stage
 RUN set -eux \
@@ -72,7 +73,7 @@ RUN set -eux \
 
 WORKDIR /usr/local/src
 
-# Download FreePBX source at build time
+# FreePBX source
 RUN set -eux \
   && FREEPBX_URL="https://github.com/escomputers/freepbx-docker/releases/download/v${FREEPBX_VERSION_TAG}/freepbx-${FREEPBX_VERSION}.tgz" \
   && curl -fsSL "$FREEPBX_URL" -o freepbx.tgz \
@@ -86,10 +87,10 @@ COPY odbc/odbc.ini /etc/odbc.ini
 COPY fail2ban/jail.local /etc/fail2ban/jail.local
 COPY fail2ban/filter.d/asterisk.conf /etc/fail2ban/filter.d/asterisk.conf
 COPY postfix/main.cf /etc/postfix/main.cf
-COPY postfix/sasl_passwd /etc/postfix/sasl_passwd
+COPY logrotate/asterisk /etc/logrotate.d/asterisk
 COPY entrypoint.sh entrypoint.sh
 
-RUN postmap hash:/etc/postfix/sasl_passwd \
+RUN sed -i "s|^smtp_sasl_password_maps.*|smtp_sasl_password_maps = texthash:/run/secrets/postfix_sasl_passwd|" /etc/postfix/main.cf \
   && mkdir -p /var/log/asterisk \
   && touch /var/log/asterisk/full \
   && chown -R asterisk:asterisk /var/log/asterisk

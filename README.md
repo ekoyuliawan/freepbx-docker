@@ -10,6 +10,7 @@ Upon starting this multi-container application, it will give you a turnkey PBX s
 * MariaDB 10.11.14
 * Fail2ban pre-configured with restrictive enforcement rules
 * Email notifications
+* Logrotate configured also for Asterisk and Freepbx
 * Supports data persistence
 * Base image Debian [debian:bookworm-slim](https://hub.docker.com/_/debian/)
 * Apache 2.4.65
@@ -22,6 +23,7 @@ The following ports are exposed via Docker.
 | Port              | Description |
 | ----------------- | ----------- |
 | `80/tcp`          | HTTP        |
+| `443/tcp`         | HTTPS       |
 | `5060/udp`        | PJSIP       |
 
 RTP ports e.g. `16384-32767/udp` require a particular configuration in order to be
@@ -32,9 +34,8 @@ So [run.sh](run.sh) will take care of iptables configuration, besides building a
 
 ### Host requirements
 - `ip`, `iptables` and `awk` commands
-- 64-bit Intel/AMD (x86_64) platform. Arm architecture is not supported since Asterisk needs to be compiled differently.
-- Docker iptables rules will bypass any firewall rule on the system.
-- Iptables rules are temporary, unless you make them persistent in this way:
+- iptables rules inside the Docker chains will bypass any firewall rule on the system
+- Iptables rules are temporary, unless you make them persistent in this way (Debian-like):
 ```bash
 sudo apt-get update
 sudo apt-get install -y iptables-persistent
@@ -47,7 +48,7 @@ sudo sh -c 'iptables-save > /etc/iptables/rules.v4'
 ```
 - Customize Fail2ban preferences by editing the file `fail2ban/jail.local`. Currently it bans 2 consecutive failed SIP registration attempts within 30 seconds for 1 week.
 
-- Make sure to configure a valid DNS server for Docker containers by adding the following to `/etc/docker/daemon.json` (restart Docker after saving the file):
+- Make sure you have a valid DNS server for Docker containers by adding the following to `/etc/docker/daemon.json` (restart Docker after saving the file):
   ```json
   {
     "dns": ["1.1.1.1"]
@@ -55,24 +56,24 @@ sudo sh -c 'iptables-save > /etc/iptables/rules.v4'
   ```
 
 ## Usage
-1. Create a password for MySQL root user:
+1. Create required passwords:
 ```bash
+# for MySQL root user
 printf "your-mysql-root-password" > mysql_root_password.txt
 printf "yourstrongmysqlfreepbxuserpassword" > freepbxuser_password.txt
 
+# for Postfix
+# run this command even if you don't need email notifications
+printf "[smtp-server-fqdn]:port your-email@gmail.com:your-app-password" > sasl_passwd.txt
+
 # Set proper file permissions
-chmod 600 mysql_root_password.txt
-chmod 600 freepbxuser_password.txt
+chmod 600 mysql_root_password.txt freepbxuser_password.txt sasl_passwd.txt
 ```
 
-2. If you want to enable email notifications, configure the following:
-- set the `relayhost` in [postfix/main.cf](source/postfix/main.cf) to match your SMTP server. 
-- fill in [postfix/sasl_passwd](source/postfix/sasl_passwd) with your SMTP server again and your email credentials\
-Example configurations for Gmail accounts are included in those files.
+2. To complete postfix configuration, set the `relayhost` in [postfix/main.cf](source/postfix/main.cf) to match your SMTP server defined in `sasl_passwd.txt`. 
 
-3. OPTION A: build the image from scratch:\
+3. OPTION A: build the image from scratch:
 ```bash
-# Build it
 cd source && sudo docker build -t your-image-name:your-tag .
 ```
 Then edit the value of `services.freepbx.image` in the [docker-compose.yaml](docker-compose.yaml) by setting the proper image version and tag.

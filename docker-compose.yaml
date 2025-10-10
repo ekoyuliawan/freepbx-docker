@@ -19,6 +19,8 @@ secrets:
     file: mysql_root_password.txt
   freepbxuser_password:
     file: freepbxuser_password.txt
+  postfix_sasl_passwd:
+    file: sasl_passwd.txt
 
 services:
   db:
@@ -54,5 +56,7 @@ services:
       - "80:80/tcp"
       - "443:443/tcp"
       - "5060:5060/udp"
+    secrets:
+      - postfix_sasl_passwd
     depends_on:
       - db

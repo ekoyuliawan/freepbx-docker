@@ -1,0 +1,56 @@
+# Asterisk core logs (gestiti da logger.conf)
+/var/log/asterisk/full /var/log/asterisk/messages.log {
+  daily
+  rotate 7
+  # size 50M
+  missingok
+  notifempty
+  compress
+  delaycompress
+  dateext
+  su asterisk asterisk
+  sharedscripts
+  create 0640 asterisk asterisk
+  postrotate
+    /usr/sbin/asterisk -rx 'logger reload' >/dev/null 2>&1 || true
+  endscript
+}
+
+# FreePBX PHP logs
+/var/log/asterisk/freepbx.log /var/log/asterisk/freepbx_security.log {
+  daily
+  rotate 7
+  missingok
+  notifempty
+  compress
+  delaycompress
+  dateext
+  su asterisk asterisk
+  copytruncate
+}
+
+# Asterisk queue log
+/var/log/asterisk/queue_log {
+  daily
+  rotate 7
+  missingok
+  notifempty
+  compress
+  delaycompress
+  dateext
+  su asterisk asterisk
+  copytruncate
+}
+
+# CDR/CEL CSV
+/var/log/asterisk/cdr-csv/*.csv /var/log/asterisk/cdr-custom/*.csv /var/log/asterisk/cel-custom/*.csv {
+  daily
+  rotate 7
+  missingok
+  notifempty
+  compress
+  delaycompress
+  dateext
+  su asterisk asterisk
+  copytruncate
+}
