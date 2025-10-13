@@ -68,8 +68,9 @@ RUN set -eux \
   && a2enmod rewrite \
   && apache2ctl -t \
   && echo "ServerName localhost" >> /etc/apache2/apache2.conf \
-  && rm /var/www/html/index.html
-
+  && rm -rf /usr/src/asterisk-${ASTERISK_VERSION} asterisk.tar.gz /var/www/html/index.html \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 WORKDIR /usr/local/src
 
@@ -78,9 +79,7 @@ RUN set -eux \
   && FREEPBX_URL="https://github.com/escomputers/freepbx-docker/releases/download/v${FREEPBX_VERSION_TAG}/freepbx-${FREEPBX_VERSION}.tgz" \
   && curl -fsSL "$FREEPBX_URL" -o freepbx.tgz \
   && tar -xzf freepbx.tgz \
-  && rm freepbx.tgz \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+  && rm freepbx.tgz
 
 COPY odbc/odbcinst.ini /etc/odbcinst.ini
 COPY odbc/odbc.ini /etc/odbc.ini
