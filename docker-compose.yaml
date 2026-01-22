@@ -11,8 +11,8 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 172.18.0.0/16
-          gateway: 172.18.0.1
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
 
 secrets:
   mysql_root_password:
@@ -39,23 +39,36 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       defaultnet:
-        ipv4_address: 172.18.0.10
+        ipv4_address: 172.20.0.10
 
   freepbx:
     restart: always
     image: escomputers/freepbx:17
     cap_add:
       - NET_ADMIN
+    hostname: freepbx-docker.jsmwebrtc.my.id
     volumes:
       - var_data:/var
       - etc_data:/etc
+      #- /opt/freepbx-data/recording:/var/spool/asterisk/monitor
+      #- /opt/freepbx-data/conf:/etc/asterisk
+      #- /opt/freepbx-data/log:/var/log/asterisk
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     networks:
       defaultnet:
-        ipv4_address: 172.18.0.20
+        ipv4_address: 172.20.0.20
     ports:
-      - "80:80/tcp"
-      - "443:443/tcp"
-      - "5060:5060/udp"
+      - "80:80/tcp" # http
+      - "443:443/tcp" # https
+      - "8088:8088/tcp" # ws
+      - "8089:8089/tcp" # wss
+      - "5060:5060/tcp" # standard sip
+      - "5060:5060/udp" # standard sip
+      - "5061:5061/tcp" # standard sip-tls
+      - "5061:5061/udp" # standard sip-tls
+      - "50633:50633/tcp" # custom sip-tls
+      - "50633:50633/udp" # custom sip-tls
     secrets:
       - postfix_sasl_passwd
     depends_on:

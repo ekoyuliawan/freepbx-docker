@@ -1,8 +1,9 @@
 [asterisk]
 ignoreip    = 127.0.0.1/8 ::1
               10.0.0.0/8
-              172.16.0.0/12
+              172.20.0.0/12
               192.168.0.0/16
+              192.0.0.0/16
 enabled = true
 backend = auto
 filter = asterisk

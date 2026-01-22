@@ -59,12 +59,12 @@ sudo sh -c 'iptables-save > /etc/iptables/rules.v4'
 1. Create required passwords:
 ```bash
 # for MySQL root user
-printf "your-mysql-root-password" > mysql_root_password.txt
-printf "yourstrongmysqlfreepbxuserpassword" > freepbxuser_password.txt
+printf "notabeneNYA76" > mysql_root_password.txt
+printf "notabeneNYA76" > freepbxuser_password.txt
 
 # for Postfix
 # run this command even if you don't need email notifications
-printf "[smtp-server-fqdn]:port your-email@gmail.com:your-app-password" > sasl_passwd.txt
+printf "[smtp.gmail.com]:587 jsmemailnotifier@gmail.com:xhzfpirwpnjsdfhg" > sasl_passwd.txt
 
 # Set proper file permissions
 chmod 600 mysql_root_password.txt freepbxuser_password.txt sasl_passwd.txt

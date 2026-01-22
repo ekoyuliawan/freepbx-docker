@@ -29,9 +29,11 @@ RUN apt-get update && apt-get -y install \
   libasound2-dev libogg-dev libvorbis-dev libicu-dev libcurl4-openssl-dev \
   odbc-mariadb unixodbc \
   libical-dev libneon27-dev libsrtp2-dev libspandsp-dev libtool-bin \
-  nodejs npm ipset iptables fail2ban php-soap \
+  nodejs npm ipset php-soap \
+  #iptables fail2ban \
   postfix libsasl2-modules mailutils \
-  certbot python3-certbot-apache logrotate
+  certbot python3-certbot-apache logrotate \
+  nano
 
 # Download and build Asterisk directly in this stage
 RUN set -eux \
