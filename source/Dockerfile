@@ -32,9 +32,8 @@ RUN apt-get update && apt-get -y install \
   nodejs npm ipset php-soap \
   #iptables fail2ban \
   postfix libsasl2-modules mailutils \
-  certbot python3-certbot-apache logrotate \
-  nano
-
+  certbot python3-certbot-apache logrotate
+  
 # Download and build Asterisk directly in this stage
 RUN set -eux \
   && AST_URL="https://github.com/escomputers/freepbx-docker/releases/download/v${ASTERISK_VERSION_TAG}/asterisk-${ASTERISK_VERSION}.tar.gz" \

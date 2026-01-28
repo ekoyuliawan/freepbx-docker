@@ -1,8 +1,3 @@
-volumes:
-  mysql_data:
-  var_data:
-  etc_data:
-
 networks:
   defaultnet:
     driver: bridge
@@ -34,9 +29,11 @@ services:
       - mysql_root_password
       - freepbxuser_password
     volumes:
-      - mysql_data:/var/lib/mysql
+      - /mnt/storage/database:/var/lib/mysql
       - ./my.cnf:/etc/mysql/my.cnf:ro
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     networks:
       defaultnet:
         ipv4_address: 172.20.0.10
@@ -46,29 +43,24 @@ services:
     image: escomputers/freepbx:17
     cap_add:
       - NET_ADMIN
+    # IMPORTANT: hostname is required for WebRTC to function properly:
     hostname: freepbx-docker.jsmwebrtc.my.id
     volumes:
-      - var_data:/var
-      - etc_data:/etc
-      #- /opt/freepbx-data/recording:/var/spool/asterisk/monitor
-      #- /opt/freepbx-data/conf:/etc/asterisk
-      #- /opt/freepbx-data/log:/var/log/asterisk
+      - /mnt/storage/recording:/var/spool/asterisk/monitor
+      - /mnt/storage/conf:/etc/asterisk
+      - /mnt/storage/log:/var/log/asterisk
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
     networks:
       defaultnet:
         ipv4_address: 172.20.0.20
     ports:
-      - "80:80/tcp" # http
-      - "443:443/tcp" # https
-      - "8088:8088/tcp" # ws
-      - "8089:8089/tcp" # wss
-      - "5060:5060/tcp" # standard sip
-      - "5060:5060/udp" # standard sip
-      - "5061:5061/tcp" # standard sip-tls
-      - "5061:5061/udp" # standard sip-tls
-      - "50633:50633/tcp" # custom sip-tls
-      - "50633:50633/udp" # custom sip-tls
+      - "80:80/tcp"
+      - "443:443/tcp"
+      - "8088:8088/tcp"
+      - "8089:8089/tcp"
+      - "5060:5060/udp"
+      - "50633:50633/udp"
     secrets:
       - postfix_sasl_passwd
     depends_on:
