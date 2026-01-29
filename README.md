@@ -59,12 +59,12 @@ sudo sh -c 'iptables-save > /etc/iptables/rules.v4'
 1. Create required passwords:
 ```bash
 # for MySQL root user
-printf "notabeneNYA76" > mysql_root_password.txt
-printf "notabeneNYA76" > freepbxuser_password.txt
+printf "yourStrongPassword" > mysql_root_password.txt
+printf "yourStrongPassword" > freepbxuser_password.txt
 
 # for Postfix
 # run this command even if you don't need email notifications
-printf "[smtp.gmail.com]:587 jsmemailnotifier@gmail.com:xhzfpirwpnjsdfhg" > sasl_passwd.txt
+printf "[smtp.gmail.com]:587 jsmemailnotifier@gmail.com:xxxxxxxxxxxxxxxx" > sasl_passwd.txt
 
 # Set proper file permissions
 chmod 600 mysql_root_password.txt freepbxuser_password.txt sasl_passwd.txt
@@ -82,17 +82,24 @@ Then edit the value of `services.freepbx.image` in the [docker-compose.yaml](doc
 
 4. Configure RTP ports on the host and build + run the Compose project:
 ```bash
+
+
+# 1. Clean everything
+sudo bash run.sh --clean-all
+# Answer "yes" to both prompts
+
+# 2. Prepare storage (extracts /etc/asterisk from image)
+sudo bash run.sh --prepare-storage
+
+# 3. Start containers
 sudo bash run.sh
 # If you want to override the default RTP port range (16384-32767):
 sudo bash run.sh --rtp 10000-20000
 # NOTE
 # If you run the script with the default RTP range 16384-32767 and later rerun it with a different range, the iptables rules from the previous range remain in place and you have to delete those rules manually before or after applying the new range.
 
-# Install Freepbx
+# 4. Install FreePBX with all modules
 sudo bash run.sh --install-freepbx
-
-# Optional, clean up containers, network and volumes
-sudo bash run.sh --clean-all
 ```
 
 5. TLS support using Let's Encrypt DNS challenge
