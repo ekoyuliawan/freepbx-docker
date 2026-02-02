@@ -33,7 +33,6 @@ services:
       - ./my.cnf:/etc/mysql/my.cnf:ro
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
       - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
     networks:
       defaultnet:
         ipv4_address: 172.20.0.10
@@ -50,7 +49,6 @@ services:
       - /mnt/storage/conf:/etc/asterisk
       - /mnt/storage/log:/var/log/asterisk
       - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
     networks:
       defaultnet:
         ipv4_address: 172.20.0.20
