@@ -8,9 +8,9 @@ enabled = true
 backend = auto
 filter = asterisk
 logpath = /var/log/asterisk/full
-maxretry = 2
+maxretry = 3
 findtime = 30
-bantime = 1w
+bantime = 1d
 action = iptables-allports[protocol=all]
 [sshd]
 enabled = false
